@@ -13,7 +13,7 @@
       cisco.ios.ios_lag_interfaces:
         config:
           - name: 1
-            members: >- 
+            members: >-
               {{ switches_config[inventory_hostname].etherchannel_members }}
         state: merged
     - name: 3. Configure EtherChannel (Port-Channel 1) as Trunk
