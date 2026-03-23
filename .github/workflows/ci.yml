@@ -1,28 +1,25 @@
+---
 name: CI - Test Ansible
-
 on:
   push:
-    branches: [ "main", "dev" ]
-
+    branches:
+      - main
+      - dev
 jobs:
   test:
     runs-on: ubuntu-latest
-
     steps:
       - name: Get code
         uses: actions/checkout@v4
-
       - name: Install Ansible
         run: |
           sudo apt update
           sudo apt install -y python3-pip
           pip install ansible ansible-lint yamllint
-
       - name: Check YAML
         run: yamllint .
-
       - name: Check DHCP playbook
         run: ansible-playbook dhcp/dhcp.yaml -i dhcp/inventory --syntax-check
-
       - name: Check OSPF playbook
         run: ansible-playbook ospf/ospf.yaml -i ospf/inventory --syntax-check
+
