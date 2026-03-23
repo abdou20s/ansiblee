@@ -22,4 +22,3 @@ jobs:
         run: ansible-playbook dhcp/dhcp.yaml -i dhcp/inventory --syntax-check
       - name: Check OSPF playbook
         run: ansible-playbook ospf/ospf.yaml -i ospf/inventory --syntax-check
-

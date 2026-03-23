@@ -13,7 +13,8 @@
       cisco.ios.ios_lag_interfaces:
         config:
           - name: 1
-            members: "{{ switches_config[inventory_hostname].etherchannel_members }}"
+            members: >- 
+              {{ switches_config[inventory_hostname].etherchannel_members }}
         state: merged
     - name: 3. Configure EtherChannel (Port-Channel 1) as Trunk
       cisco.ios.ios_config:
@@ -34,4 +35,3 @@
           - switchport port-security mac-address sticky
         parents: interface {{ item.name }}
       loop: "{{ switches_config[inventory_hostname].access_ports }}"
-
