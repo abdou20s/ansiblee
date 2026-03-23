@@ -3,32 +3,27 @@
   hosts: ntp_clients
   gather_facts: no
   connection: network_cli
-
   vars_files:
     - vars.yaml
-
   tasks:
-
     - name: Configure Loopback0 base interface properties
       cisco.ios.ios_interfaces:
         config:
           - name: Loopback0
-            description: "NTP Source and Client IP"
+            description: NTP Source and Client IP
             enabled: true
         state: merged
-
     - name: Configure Loopback0 IPv4 address dynamically
       cisco.ios.ios_l3_interfaces:
         config:
           - name: Loopback0
             ipv4:
-              - address: "{{ ntp_loopbacks[inventory_hostname] }}/32" 
+              - address: "{{ ntp_loopbacks[inventory_hostname] }}/32"
         state: merged
-
     - name: Configure NTP client settings
       cisco.ios.ios_ntp_global:
         config:
           source: Loopback0
           servers:
-            - server: "{{ ntp_loopbacks['R2'] }}"  # Points to R2's loopback as the server
+            - server: "{{ ntp_loopbacks['R2'] }}"
         state: merged

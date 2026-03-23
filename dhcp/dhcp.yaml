@@ -1,27 +1,23 @@
 ---
 - name: Configure DHCP Server
-  hosts: R1  # Adjust this if only one specific router should be the DHCP server
+  hosts: R1
   gather_facts: no
   connection: network_cli
-
   vars_files:
     - vars.yaml
-
   tasks:
     - name: Enable the DHCP service globally
       cisco.ios.ios_config:
         lines:
           - service dhcp
-
     - name: Exclude IP ranges to strictly enforce the .10 to .50 boundary
       cisco.ios.ios_config:
         lines:
-          - "ip dhcp excluded-address 192.168.10.1 192.168.10.9"     # Blocks everything below your start range
-
+          - ip dhcp excluded-address 192.168.10.1 192.168.10.9
     - name: Configure the DHCP Pool settings
       cisco.ios.ios_config:
-        parents: "ip dhcp pool {{ dhcp_pool_name }}"
+        parents: ip dhcp pool {{ dhcp_pool_name }}
         lines:
-          - "network 192.168.10.0 255.255.255.0"  # Defines the whole /24 subnet
-          - "default-router {{ hsrp_virtual_ip }}"
-          - "dns-server {{ dhcp_dns }}"
+          - network 192.168.10.0 255.255.255.0
+          - default-router {{ hsrp_virtual_ip }}
+          - dns-server {{ dhcp_dns }}

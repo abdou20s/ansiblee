@@ -3,34 +3,28 @@
   hosts: ntp_master
   gather_facts: no
   connection: network_cli
-
   vars_files:
     - vars.yaml
-
   tasks:
-
     - name: Configure Loopback0 base interface properties
       cisco.ios.ios_interfaces:
         config:
           - name: Loopback0
-            description: "NTP Source"
+            description: NTP Source
             enabled: true
         state: merged
-
     - name: Configure Loopback0 IPv4 address
       cisco.ios.ios_l3_interfaces:
         config:
           - name: Loopback0
             ipv4:
-              - address: "{{ ntp_loopbacks['R2'] }}/32" 
-              # Tip: You can swap 'R2' for 'inventory_hostname' to make this variable dynamic across multiple routers!
+              - address: "{{ ntp_loopbacks['R2'] }}/32"
         state: merged
-
     - name: Configure NTP global settings
       cisco.ios.ios_ntp_global:
         config:
           source: Loopback0
           master:
             enabled: true
-            stratum: 2   # Set this router as NTP master with stratum 2
+            stratum: 2
         state: merged
