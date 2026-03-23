@@ -1,0 +1,36 @@
+---
+vlans:
+  - vlan_id: 10
+    name: Sales
+  - vlan_id: 20
+    name: Engineering
+
+# Host-specific configurations mapped to your inventory names
+switches_config:
+  SW1:
+    # The two links connecting SW1 to SW2
+    etherchannel_members:
+      - member: GigabitEthernet0/3
+        mode: active
+      - member: GigabitEthernet0/2
+        mode: active
+    # The PC connections
+    access_ports:
+      - name: GigabitEthernet0/1  # PC1 port
+        vlan: 10
+      - name: GigabitEthernet0/0  # PC2 port
+        vlan: 20
+
+  SW2:
+    # The two links connecting SW2 to SW1
+    etherchannel_members:
+      - member: GigabitEthernet0/3
+        mode: active
+      - member: GigabitEthernet0/2
+        mode: active
+    # The PC connections
+    access_ports:
+      - name: GigabitEthernet0/1  # PC3 port
+        vlan: 20
+      - name: GigabitEthernet0/0  # PC4 port
+        vlan: 10

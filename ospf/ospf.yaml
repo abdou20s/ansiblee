@@ -1,0 +1,20 @@
+- name: Configure OSPF
+  hosts: routers
+  gather_facts: no
+
+  tasks:
+
+    - name: Configure OSPF router-id
+      cisco.ios.ios_config:
+        parents: router ospf 1
+        lines:
+          - router-id {{ router_id }}
+
+    - name: Configure OSPF networks
+      cisco.ios.ios_config:
+        parents: router ospf 1
+        lines: "{{ ospf_networks | map('regex_replace', '^(.*)$', 'network \\1') | list }}"
+
+    - name: Save config
+      cisco.ios.ios_config:
+        save_when: always

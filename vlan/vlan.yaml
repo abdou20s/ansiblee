@@ -1,0 +1,44 @@
+---
+- name: Configure Access Switches Dynamically
+  hosts: switches
+  gather_facts: false
+  vars_files:
+    - vars.yaml
+
+  tasks:
+    - name: 1. Create VLANs dynamically from vars
+      cisco.ios.ios_vlans:
+        config: "{{ vlans }}"
+        state: merged
+
+    - name: 2. Bind Physical Interfaces to EtherChannel
+      cisco.ios.ios_lag_interfaces:
+        config:
+          - name: 1
+            # Ansible automatically pulls the list of dictionaries from vars.yaml
+            members: "{{ switches_config[inventory_hostname].etherchannel_members }}"
+        state: merged
+
+    - name: 3. Configure EtherChannel (Port-Channel 1) as Trunk
+      cisco.ios.ios_config:
+        lines:
+          - switchport trunk encapsulation dot1q
+          - switchport mode trunk
+          # This dynamically extracts just the VLAN IDs (10,20) and joins them with a comma
+          - switchport trunk allowed vlan "{{ vlans | map(attribute='vlan_id') | join(',') }}"
+        parents: interface Port-channel1
+
+    - name: 4. Configure Access Ports & Port Security dynamically
+      cisco.ios.ios_config:
+        lines:
+          - switchport mode access
+          # Injects the specific VLAN for the specific port
+          - switchport access vlan {{ item.vlan }}
+          - switchport port-security
+          - switchport port-security maximum 1
+          - switchport port-security violation shutdown
+          - switchport port-security mac-address sticky
+        # Injects the specific interface name
+        parents: interface {{ item.name }}
+      # Loops through the access_ports list for the specific switch currently being configured
+      loop: "{{ switches_config[inventory_hostname].access_ports }}"

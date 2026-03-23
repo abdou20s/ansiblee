@@ -1,0 +1,23 @@
+---
+- name: Configure HSRP on LAN Interfaces
+  hosts: routers
+  gather_facts: no
+  connection: network_cli
+
+  vars_files:
+    - vars.yaml
+
+  tasks:
+    - name: Configure HSRP settings
+      cisco.ios.ios_hsrp_interfaces:
+        config:
+          - name: "{{ hsrp_interfaces[inventory_hostname] }}"
+            version: 2
+            standby_groups:          # <-- Updated keyword
+              - group_no: "{{ hsrp_group }}"   # <-- Updated keyword
+                ip:                  # <-- Updated IP block
+                  - virtual_ip: "{{ hsrp_virtual_ip }}"
+                priority: "{{ r1_priority if inventory_hostname == 'R1' else r2_priority }}"
+                preempt:
+                  enabled: true
+        state: merged

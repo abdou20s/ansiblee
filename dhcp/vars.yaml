@@ -1,0 +1,13 @@
+hsrp_group: 1
+hsrp_virtual_ip: "192.168.10.1"
+r1_priority: 110
+r2_priority: 100
+hsrp_interfaces:
+  R1: "F0/0"
+  R2: "F0/0"
+# DHCP configuration
+dhcp_pool_name: "LAN"
+dhcp_range_start: "192.168.10.10"
+dhcp_range_end: "192.168.10.50"
+dhcp_dns: "8.8.8.8"
+dhcp_excluded_ips: "192.168.10.2,192.168.10.3"
